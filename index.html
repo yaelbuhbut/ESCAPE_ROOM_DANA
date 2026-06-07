@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ההגשה הסופית בהחלט_סופי_סופי_3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Platypi:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+        }
+        .serif-title {
+            font-family: 'Platypi', serif;
+        }
+        /* Custom scrollbar for perfectionists */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        /* Subtle scanline effect for office terminal vibe */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 24, 38, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 4px, 6px 100%;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden relative scanlines">
+
+    <script>
+        // Premium minimalist synth audio feedback
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'success') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                    osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.35); // C6
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                } else if (type === 'fix') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.15);
+                }
+            } catch (e) {
+                console.log("Audio contextual issue", e);
+            }
+        }
+    </script>
+
+    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3 space-x-reverse">
+            <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span class="text-sm tracking-wider font-mono text-slate-400">PROJECT_DANA_RELEASE.sh</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="text-xs text-slate-400">
+                סטטוס: <span class="text-emerald-400 font-semibold" id="global-status">נעול</span>
+            </div>
+            <div class="text-xs text-slate-400 border border-slate-700 rounded-full px-3 py-1 bg-slate-800/40">
+                פרפקציוניזם: <span class="text-indigo-400 font-mono font-bold" id="ocd-meter">0%</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl w-full mx-auto p-4 md:p-8 flex flex-col justify-center">
+        
+        <!-- INTRO STEP -->
+        <section id="step-intro" class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-10 shadow-2xl backdrop-blur-sm relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500"></div>
+            <div class="mb-6" dir="rtl">
+                <span class="text-xs text-indigo-400 font-mono uppercase tracking-widest block mb-2">מזל בתולה • עין חדה • אפס סבלנות לחובבנות</span>
+                <h1 class="text-3xl md:text-4xl font-extrabold serif-title tracking-tight text-white mb-4">
+                    טופס טיולים דיגיטלי: דנה משתחררת
+                </h1>
+                <p class="text-slate-300 leading-relaxed text-base md:text-lg mb-6">
+                    היי דנה, שמענו שאת עוזבת אותנו. כמובן שלא ניתן לך ללכת כל כך בקלות. 
+                    מישהו בהנהלה החליט לעצב את דף השחרור שלך בפונט <span class="font-mono text-rose-400">Arial</span> נוראי, 
+                    עם יישור ימני עקום, רווחים כפולים אקראיים, ושלל פשעים ויזואליים.
+                </p>
+                <p class="text-slate-400 leading-relaxed text-sm md:text-base border-r-2 border-indigo-500 pr-4 italic">
+                    כדי להוכיח שאת מוכנה באמת לדרך החדשה, עלייך לפתור את 4 החידות הבאות שיבחנו את הזיכרון שלך, את חדות העין שלך לצבעים ולרווחים, ואת הידע שלך על עצמך ועל המשרד.
+                </p>
+            </div>
+            <div class="flex justify-end">
+                <button onclick="startEscapeRoom()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-3 rounded-xl transition duration-200 transform hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-indigo-600/30">
+                    אני פרפקציוניסטית, תנו לי לתקן את זה &larr;
+                </button>
+            </div>
+        </section>
+
+        <!-- PUZZLE 1: The Printed Sheet Counting -->
+        <section id="step-puzzle-1" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur-sm">
+            <div class="flex justify-between items-start mb-6 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs text-indigo-400 font-mono">חידה 1 מתוך 4</span>
+                    <h2 class="text-2xl font-bold text-white mt-1">פשע ה-Double Space (הדף הפיזי)</h2>
+                </div>
+            </div>
+            
+            <p class="text-slate-300 mb-6 leading-relaxed">
+                מכתב הפרידה הרשמי שנוסח עבורך במשרד הודפס והונח איפשהו בחדר. 
+                כפי שבוודאי תבחיני מיד, מישהו עשה שם פשעים חמורים נגד המרווח הטיפוגרפי התקין.
+                <br><br>
+                מצאי את הדף הפיזי בחדר, סרקי אותו בעינייך הפרפקציוניסטיות וספרי: 
+                <strong class="text-indigo-400 font-semibold">כמה רווחים כפולים מביכים ומכוערים השתרבבו לתוך הטקסט?</strong>
+            </p>
+
+            <div class="bg-slate-950 p-8 rounded-xl border border-slate-800 flex flex-col items-center justify-center max-w-md mx-auto my-6">
+                <label for="p1-space-input" class="text-sm text-slate-400 mb-3 text-center">הזיני את מספר הרווחים הכפולים שמצאת:</label>
+                <div class="flex gap-3">
+                    <input type="number" id="p1-space-input" min="0" max="99" placeholder="0" class="w-20 h-14 bg-slate-900 text-white text-center text-2xl font-bold rounded-xl border border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                    <button onclick="checkPrintedSpaces()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-2 rounded-xl text-sm transition duration-150">
+                        אמת ספירה
+                    </button>
+                </div>
+                <p id="p1-error-msg" class="hidden text-rose-400 text-xs mt-3 text-center">מספר לא נכון. סרקי שוב את הדף, אל תתני לאף רווח מיותר לחמוק!</p>
+            </div>
+
+            <div id="p1-success-block" class="hidden bg-emerald-950/40 border border-emerald-500/50 p-5 rounded-xl text-center text-emerald-300 mb-6 animate-fade-in">
+                <span class="font-bold text-base block mb-1">✓ כמובן שמצאת את כל הרווחים הכפולים</span>
+                <p class="text-sm mb-3">לא באמת ציפינו שמישהי שמזהה רווח כפול ממרחק של שני מסכים תפספס אותם.</p>
+                <div class="bg-emerald-900/50 py-3 px-5 rounded-lg inline-block border border-emerald-500/30">
+                    <span class="text-sm text-slate-300">שמרי את המילה הראשונה להמשך הדרך:</span>
+                    <strong class="text-3xl text-white font-bold block mt-1">מופלאה</strong>
+                </div>
+                <p class="text-xs text-slate-400 mt-3">בסוף המסע תצטרכי להשתמש בכל המילים שתאספי.</p>
+            </div>
+
+            <div class="mt-6 flex justify-end items-center border-t border-slate-800 pt-4">
+                <button id="p1-next-btn" disabled onclick="goToPuzzle2()" class="opacity-50 cursor-not-allowed bg-emerald-600 text-white font-semibold px-6 py-2.5 rounded-xl transition duration-200">
+                    המשך לחידת הצבעים &larr;
+                </button>
+            </div>
+        </section>
+
+        <!-- PUZZLE 2: Color Palette Match -->
+        <section id="step-puzzle-2" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur-sm">
+            <div class="flex justify-between items-start mb-6 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs text-indigo-400 font-mono">חידה 2 מתוך 4</span>
+                    <h2 class="text-2xl font-bold text-white mt-1">פלטת הצבעים המזויפת</h2>
+                </div>
+                <span class="text-xs text-slate-400 font-mono">המילה הראשונה שאספת: <span id="p1-code-display" class="text-emerald-400 font-bold text-sm"></span></span>
+            </div>
+
+            <p class="text-slate-300 mb-6 leading-relaxed">
+                כאמנית וציירת, עין הצבע שלך חדה כמו לייזר. מולך מוצגות 5 דוגמיות צבע של פרויקטים שונים במשרד. 
+                רק דוגמית אחת נושאת קוד צבע (<span class="font-mono">HEX</span>) שאינו תואם בכלל לגוון המוצג בה. 
+                לחצי על הכרטיסייה השגויה כדי לחשוף את המספר השני לקוד.
+            </p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6" id="palette-grid">
+                <!-- Dynamic palettes -->
+            </div>
+
+            <div id="p2-success-msg" class="hidden bg-emerald-950/60 border border-emerald-500 p-5 rounded-xl text-center text-emerald-300 mb-6 animate-fade-in shadow-lg shadow-emerald-950/50">
+                <p class="font-bold text-base mb-1">✓ פגיעה בול!</p>
+                <p class="text-sm mb-3">כמובן שעלית על הצבע המזויף. לא באמת חשבנו שאפשר לעבוד על העין שלך.</p>
+                <div class="bg-emerald-900/50 py-3 px-5 rounded-lg inline-block border border-emerald-500/30">
+                    <span class="text-sm text-slate-300 block mb-2">שמרי את המילה הבאה להמשך:</span>
+                    <strong class="text-3xl text-white block mt-1" id="p2-word-display">כישורים</strong>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button onclick="goToPuzzle1()" class="text-slate-400 hover:text-white transition text-sm">
+                    &rarr; חזרה לרווחים
+                </button>
+                <button id="p2-next-btn" disabled onclick="goToPuzzleQuiz()" class="opacity-50 cursor-not-allowed bg-emerald-600 text-white font-semibold px-6 py-2.5 rounded-xl transition duration-200">
+                    המשך לשאלון האישי &larr;
+                </button>
+            </div>
+        </section>
+
+        <!-- PUZZLE 3: Multiple Choice Quiz (The 8 Questions with letter-gathering) -->
+        <section id="step-puzzle-quiz" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur-sm">
+            <div class="flex justify-between items-start mb-4 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs text-indigo-400 font-mono">חידה 3 מתוך 4</span>
+                    <h2 class="text-2xl font-bold text-white mt-1">שאלון הדיוק המקצועי (והציניות)</h2>
+                </div>
+                <div class="text-xs text-slate-400 font-mono">
+                    מילה 1: <span class="text-emerald-400 font-bold">מופלאה</span> | 
+                    מילה 2: <span class="text-emerald-400 font-bold">כישורים</span> | 
+                    מילים 3-4: <span class="text-emerald-400 font-bold">שכל שלך</span>
+                </div>
+            </div>
+
+            <p class="text-slate-300 mb-6 leading-relaxed text-sm">
+                עני על 8 השאלות הבאות שנוסחו במיוחד עלייך ועל ההיסטוריה שלך איתנו! שימי לב – ליד כל תשובה מוצגת אות שונה.
+                אם תבחרי בתשובה הנכונה, תאספי את האות הנכונה למחסן שלך. אם תבחרי במסיח שגוי, תאספי אות שגויה! 
+                בסוף השאלון תעברי למסך האנאגרמה ותנסי להרכיב מהאותיות שאספת את המילה המסתתרת.
+            </p>
+
+            <!-- Letter Inventory Bar showing currently selected letters -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 mb-6">
+                <span class="text-xs text-slate-400 font-semibold block mb-2 text-center">מחסן האותיות שאספת כרגע (לפי סדר השאלות):</span>
+                <div class="flex gap-2 justify-center" id="quiz-inventory-row">
+                    <!-- Dynamic slots showing collected letters -->
+                </div>
+            </div>
+
+            <!-- Quiz Active Question Container -->
+            <div class="bg-slate-950 p-6 rounded-xl border border-slate-800" id="quiz-active-block">
+                <div class="flex justify-between items-center mb-4 text-xs text-slate-400 font-mono">
+                    <span id="quiz-progress-text">שאלה 1 מתוך 8</span>
+                    <span class="text-slate-500 font-semibold">ניתן לשנות תשובות חופשי על ידי דפדוף</span>
+                </div>
+                <h3 class="font-bold text-white mb-4 text-base md:text-lg leading-relaxed" id="quiz-question-text">שאלה?</h3>
+                <div class="grid grid-cols-1 gap-3" id="quiz-options-container">
+                    <!-- Option buttons with their respective letters -->
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-between items-center border-t border-slate-800 pt-4">
+                <div class="flex gap-2">
+                    <button id="quiz-prev-q-btn" onclick="prevQuestion()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-1.5 rounded-lg transition">
+                        &rarr; שאלה קודמת
+                    </button>
+                    <button id="quiz-next-q-btn" onclick="nextQuestion()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-1.5 rounded-lg transition">
+                        שאלה הבאה &larr;
+                    </button>
+                </div>
+                <button id="quiz-submit-btn" disabled onclick="goToPuzzle3()" class="opacity-50 cursor-not-allowed bg-emerald-600 text-white font-semibold px-6 py-2 rounded-xl text-sm transition duration-200">
+                    המשך למסך המילים &larr;
+                </button>
+            </div>
+        </section>
+
+        <!-- PUZZLE 4: Anagram / Typing the obtained word -->
+        <section id="step-puzzle-3" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur-sm">
+            <div class="flex justify-between items-start mb-6 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs text-indigo-400 font-mono">חידה 4 מתוך 4</span>
+                    <h2 class="text-2xl font-bold text-white mt-1">אשליית הטוטאליות</h2>
+                </div>
+                <div class="text-xs text-slate-400 font-mono">
+                    מילה 1: <span class="text-emerald-400 font-bold">מופלאה</span> | 
+                    מילה 2: <span class="text-emerald-400 font-bold">כישורים</span> | 
+                    מילים 3-4: <span class="text-emerald-400 font-bold">שכל שלך</span>
+                </div>
+            </div>
+
+            <p class="text-slate-300 mb-6 leading-relaxed">
+                בשאלון הקודם אספת 8 אותיות, אחת מכל תשובה נכונה.
+                אם ענית נכון, האותיות אמורות להרכיב מילה אחת שמאוד מתאימה לדנה.
+                <br><br>
+                הקלידי כאן את המילה שהתקבלה מהאותיות שאספת.
+            </p>
+
+            <!-- Typing field for the secret word -->
+            <div class="flex flex-col items-center gap-4 my-6">
+                <div class="w-full max-w-xs">
+                    <label for="anagram-input" class="block text-xs text-slate-400 mb-2 font-mono text-center">מהי המילה שהתקבלה מצירוף האותיות?</label>
+                    <input type="text" id="anagram-input" placeholder="הקלידי את המילה כאן..." class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-3 text-center text-xl font-bold tracking-widest text-white outline-none transition">
+                </div>
+                <button onclick="checkAnagramAnswer()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-2.5 rounded-xl text-sm transition duration-150 shadow-md">
+                    אמת מילה מסתתרת
+                </button>
+            </div>
+
+            <!-- Success state -->
+            <div id="p3-success-msg" class="hidden bg-emerald-950/60 border border-emerald-500 p-5 rounded-xl text-center text-emerald-300 mb-6 shadow-lg shadow-emerald-950/50">
+                <p class="font-bold text-base mb-1">✓ טוטאליות, כמובן.</p>
+                <p class="text-sm mb-3">ענית נכון ואספת את האותיות המדויקות.</p>
+                <div class="bg-emerald-900/50 py-3 px-5 rounded-lg inline-block border border-emerald-500/30">
+                    <span class="text-sm text-slate-300 block mb-2">שמרי את המילים הבאות להמשך:</span>
+                    <strong class="text-3xl text-white block mt-1" id="p3-words-display">שכל שלך</strong>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button onclick="goToPuzzleQuiz()" class="text-slate-400 hover:text-white transition text-sm">
+                    &rarr; חזרה לשאלון
+                </button>
+                <button id="p3-next-btn" disabled onclick="goToMatchingPuzzle()" class="opacity-50 cursor-not-allowed bg-emerald-600 text-white font-semibold px-6 py-2.5 rounded-xl transition duration-200">
+                    לחידת הקורסים &larr;
+                </button>
+            </div>
+        </section>
+
+
+
+
+        <!-- PUZZLE 5: Course Matching / Emoji Key -->
+        <section id="step-puzzle-match" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur-sm">
+            <div class="flex justify-between items-start mb-6 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs text-indigo-400 font-mono">חידה 5 מתוך 5</span>
+                    <h2 class="text-2xl font-bold text-white mt-1">מי פתחה את הקורס?</h2>
+                </div>
+                <div class="text-xs text-slate-400 font-mono">
+                    מילים שנאספו: <span class="text-emerald-400 font-bold">מופלאה | כישורים | שכל שלך</span>
+                </div>
+            </div>
+
+            <p class="text-slate-300 mb-6 leading-relaxed">
+                לפנייך רשימת קורסים מבולבלת, ולצד כל קורס מופיע אימוג׳י.
+                בחרי מתוך הרשימה הנפתחת איזו מעצבת למידה פתחה כל קורס.
+                <br><br>
+                כאשר כל ההתאמות יהיו נכונות, קראי את 9 האימוג׳ים שמופיעים לצד התשובות לפי הסדר, השתמשי במחסן האימוג׳ים, ופענחי את המילים המסתתרות.
+            </p>
+
+            <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 mb-6">
+                <div class="grid grid-cols-1 gap-3" id="matching-dropdown-rows-container">
+                    <!-- Dynamic matching rows in code-word order -->
+                </div>
+            </div>
+
+            <div class="flex justify-center mb-6">
+                <button onclick="checkCourseMatching()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-2.5 rounded-xl text-sm transition duration-150 shadow-md">
+                    בדיקת התאמות
+                </button>
+            </div>
+
+            <div id="matching-error-msg" class="hidden bg-rose-950/40 border border-rose-800/60 p-3 rounded-xl text-center text-rose-400 text-sm mb-6">
+                עדיין יש התאמה אחת או יותר שדורשת תיקון.
+            </div>
+
+            <div id="matching-success-msg" class="hidden bg-emerald-950/60 border border-emerald-500 p-5 rounded-xl text-center text-emerald-300 mb-6 shadow-lg shadow-emerald-950/50">
+                <p class="font-bold text-base mb-2">✓ התאמה מושלמת!</p>
+                <p class="text-sm mb-5">עכשיו קראי את האימוג׳ים לפי סדר התשובות 1–9.</p>
+
+                <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 mb-5">
+                    <p class="text-xs text-slate-400 mb-3 font-semibold">האימוג׳ים שהתקבלו:</p>
+                    <div class="flex flex-wrap justify-center gap-3 text-3xl mb-3" id="matched-emoji-sequence" dir="ltr"></div>
+                </div>
+
+                <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 mb-5">
+                    <p class="text-xs text-slate-400 mb-3 font-semibold">מחסן אימוג׳ים:</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3"><div class="text-2xl">🖥️</div><div class="text-emerald-400 font-bold mt-1">ע</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3"><div class="text-2xl">💡</div><div class="text-emerald-400 font-bold mt-1">ר</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3"><div class="text-2xl">📌</div><div class="text-emerald-400 font-bold mt-1">ה</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3"><div class="text-2xl">📚</div><div class="text-emerald-400 font-bold mt-1">ד</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3"><div class="text-2xl">🎓</div><div class="text-emerald-400 font-bold mt-1">ך</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3"><div class="text-2xl">✨</div><div class="text-emerald-400 font-bold mt-1">ז</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3"><div class="text-2xl">🎨</div><div class="text-emerald-400 font-bold mt-1">מ</div></div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3"><div class="text-2xl">🧭</div><div class="text-emerald-400 font-bold mt-1">י</div></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center gap-4">
+                    <div class="w-full max-w-xs">
+                        <label for="match-code-input" class="block text-xs text-slate-400 mb-2 font-mono text-center">מה קיבלת?</label>
+                        <input type="text" id="match-code-input" placeholder="הקלידי את המילים..." class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-3 text-center text-xl font-bold tracking-widest text-white outline-none transition">
+                    </div>
+                    <button onclick="checkMatchingCodeWord()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-2.5 rounded-xl text-sm transition duration-150 shadow-md">
+                        אמת מילים
+                    </button>
+                </div>
+
+                <div id="matching-code-success" class="hidden mt-5 bg-emerald-900/50 py-3 px-5 rounded-lg inline-block border border-emerald-500/30">
+                    <span class="text-sm text-slate-300 block mb-2">שמרי את המילים הבאות להמשך:</span>
+                    <strong class="text-3xl text-white block mt-1">מדריך עזרה</strong>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button onclick="goToPuzzle3()" class="text-slate-400 hover:text-white transition text-sm">
+                    &rarr; חזרה לטוטאליות
+                </button>
+                <button id="matching-next-btn" disabled onclick="goToBlessingScreen()" class="opacity-50 cursor-not-allowed bg-emerald-600 text-white font-semibold px-6 py-2.5 rounded-xl transition duration-200">
+                    לשיבוץ הברכה &larr;
+                </button>
+            </div>
+        </section>
+
+
+
+        <!-- BLESSING COMPLETION SCREEN -->
+        <section id="step-blessing" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur-sm">
+            <div class="text-center mb-6">
+                <span class="text-xs text-emerald-400 font-mono uppercase tracking-widest block mb-2">שלב הסיום</span>
+                <h2 class="text-3xl font-bold text-white">שיבוץ מילות הקוד בברכה</h2>
+                <p class="text-slate-400 text-sm mt-2">שבצי את כל המילים שאספת במקומות הנכונים כדי להשלים את ברכת הפרידה.</p>
+            </div>
+
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-5 md:p-7 leading-loose text-slate-200 text-right text-base md:text-lg mb-6">
+                <p class="mb-4 font-bold text-white">פרידה מדנה סידור</p>
+
+                <p>
+                    דנה, כפרה, את כל כך חסרה פה, אחות,<br>
+                    הלכת ללדת; השארת אותנו שמחות.<br>
+                    או אז נולדה נגה-בלי-וו המתוקה ה<select id="blessing-word-1" class="blessing-select bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 mx-1 text-emerald-300 font-bold outline-none"></select><br>
+                    ועשית לנו "עפרה": עזבת בהפתעה.<br>
+                    שוק. הלם. זעזוע.<br>
+                    חור בלב וגעגוע.<br>
+                    אז מה אם היה לך פתאום זמן לברר<br>
+                    אולי את רוצה לעצמך משו אחר?<br>
+                    זה לא הלהיב אותנו, זה ביאס ועוד איך,<br>
+                    אז מה אם החלטת לעשות לביתך?<br>
+                    אז מה אם מרוב
+                    <select id="blessing-word-2" class="blessing-select bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 mx-1 text-emerald-300 font-bold outline-none"></select>
+                    ואיכויות<br>
+                    יש לך הרהורים ולבטים ואפשרויות?<br>
+                    השארת שולחן של הביוקר הממש יוקרתי,<br>
+                    שני עציצים מפלסטיק ואחד אמיתי<br>
+                    ספר שכתבת, על מדף, וגם שעון<br>
+                    ו<select id="blessing-word-3" class="blessing-select bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 mx-1 text-emerald-300 font-bold outline-none"></select>
+                    - לפנתאון,<br>
+                    ובעיקר השארת לכל אחת ואחד<br>
+                    את חסך הדנה שלו.ה המיוחד.<br>
+                    עזבת אותנו, ואין דרך להקליל<br>
+                    לקחת איתך את
+                    <select id="blessing-word-4" class="blessing-select bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 mx-1 text-emerald-300 font-bold outline-none"></select>,
+                    החד בעליל,<br>
+                    את דעותייך המנומקות היטב,<br>
+                    את
+                    <select id="blessing-word-5" class="blessing-select bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 mx-1 text-emerald-300 font-bold outline-none"></select>
+                    שלך, את הנשמה ואת הלב.<br><br>
+
+                    אנחנו מאחלות, ובטוחות, שתשימי את כל הטוב הזה<br>
+                    בדבר הבא, המרגש והמדויק לך<br>
+                    לעת הזו.<br><br>
+
+                    אוהבות,<br>
+                    הפדגוגיות מהפתוחה
+                </p>
+            </div>
+
+            <div id="blessing-error-msg" class="hidden bg-rose-950/40 border border-rose-800/60 p-3 rounded-xl text-center text-rose-400 text-sm mb-6">
+                עדיין יש מילה אחת או יותר שלא שובצה במקום הנכון.
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button onclick="goToMatchingPuzzle()" class="text-slate-400 hover:text-white transition text-sm">
+                    &rarr; חזרה לחידת הקורסים
+                </button>
+                <button onclick="checkBlessingWords()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-3 rounded-xl transition duration-200">
+                    אמת שיבוץ ברכה
+                </button>
+            </div>
+        </section>
+
+
+        <!-- SUCCESS SCREEN -->
+        <section id="step-success" class="hidden bg-slate-900/60 border border-emerald-900/60 rounded-2xl p-6 md:p-10 shadow-2xl backdrop-blur-sm relative overflow-hidden">
+            <canvas id="confetti-canvas" class="absolute inset-0 pointer-events-none w-full h-full z-10"></canvas>
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-emerald-500"></div>
+            
+            <div class="text-center relative z-20">
+                <div class="w-20 h-20 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                    ✓
+                </div>
+                <span class="text-xs text-emerald-400 font-mono uppercase tracking-widest block mb-2">ההרשאות שוחררו בהצלחה</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white serif-title mb-4">
+                    כל הכבוד דנה, הברכה הושלמה!
+                </h2>
+                <div class="max-w-xl mx-auto text-slate-300 leading-relaxed space-y-4 mb-8 text-right bg-slate-950/50 p-6 rounded-xl border border-slate-800">
+                    <p>
+                        <strong>דו"ח אבחון סופי:</strong> 
+                        הוכחת באופן שאינו משתמע לשני פנים שאת הטיפוס הכי פחות סובלני לחובבנות במשרד הזה. 
+                        תיקנת את הרווחים הכפולים שהשאירו אחרייך, עלית על פלטת הצבעים המזויפת ברמת דיוק מרהיבה, ענית בדיוק מושלם על שאלון האישיות של ההיסטוריה שלך פה, וחשפת את המילה המסתתרת מאחורי האשלייה ה"טוטאלית".
+                    </p>
+                    <p class="text-slate-400 text-sm">
+                        אנחנו נתגעגע לעין הביקורתית שלך, לשנינות המושחזת, ליכולת לזהות "כמעט מושלם" ולהפוך אותו ל"מושלם באמת", ולציניות הבריאה שהחזיקה אותנו שפויים. 
+                    </p>
+                    <p class="text-indigo-400 font-semibold text-center mt-4">
+                        ועכשיו... הגיע הזמן לקבל את מתנת הפרידה האמיתית שלך מהצוות! 🎁
+                    </p>
+                </div>
+                
+                <div class="bg-indigo-950/30 border border-indigo-900/50 p-4 rounded-xl inline-block">
+                    <p class="text-sm text-slate-300 font-mono">
+                        קוד הוכחה למנהל/ת: <span class="text-indigo-300 font-bold select-all">VIRGO_PERFECT_RELEASE_2026</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-800 bg-slate-900/30 px-6 py-4 text-center text-xs text-slate-500">
+        נבנה באהבה, הערצה וסובלנות אפסית לרווחים כפולים. בהצלחה בדרך החדשה, דנה!
+    </footer>
+
+    <script>
+        // Game State Variables
+        const requiredSpacesCount = 4;
+        let selectedPaletteIndex = null;
+
+        // Quiz State & Mapped Questions to letters of "טוטאליות" (ט, ו, ט, א, ל, י, ו, ת)
+        // Shuffled correct answers randomly so they aren't always first
+        let currentQuizIndex = 0;
+        let collectedLetters = Array(8).fill(""); // Stores selected letters for each of the 8 slots
+        
+        const quizQuestions = [
+            {
+                correctLetter: 'ט',
+                text: "1. באיזה תאריך יובל נולדה?",
+                options: [
+                    { text: '21.12.21', letter: 'מ', isCorrect: false },
+                    { text: '20.12.20', letter: 'ס', isCorrect: false },
+                    { text: '12.12.20', letter: 'ט', isCorrect: true }
+                ]
+            },
+            {
+                correctLetter: 'ו',
+                text: "2. באיזה קורס דנה יצרה צירי זמן ומפות?",
+                options: [
+                    { text: 'פוליטיקה של בחירות', letter: 'כ', isCorrect: false },
+                    { text: 'ערים וספרים', letter: 'ו', isCorrect: true },
+                    { text: 'מבוא לגישות ושיטות במדע המדינה', letter: 'פ', isCorrect: false }
+                ]
+            },
+            {
+                correctLetter: 'ט',
+                text: "3. אילו תפקידים מלאה דנה במהלך השנים?",
+                options: [
+                    { text: 'מרצה למיומנויות תקשורת', letter: 'ש', isCorrect: false },
+                    { text: 'מפעילת סימולטור', letter: 'ה', isCorrect: false },
+                    { text: 'כל התשובות נכונות', letter: 'ט', isCorrect: true },
+                    { text: 'סופרת ומאיירת', letter: 'י', isCorrect: false },
+                    { text: 'מעריכה ומאבחנת תעסוקתית', letter: 'ר', isCorrect: false }
+                ]
+            },
+            {
+                correctLetter: 'א',
+                text: "4. איך נקרא ספר הביכורים של דנה?",
+                options: [
+                    { text: 'לאן נעלם לי הזנב?', letter: 'נ', isCorrect: false },
+                    { text: 'מתי גם אני אלך על ארבע?', letter: 'ק', isCorrect: false },
+                    { text: 'מתי גם לי יצמח זנב?', letter: 'א', isCorrect: true },
+                    { text: 'מתי אלמד לנבוח?', letter: 'ז', isCorrect: false }
+                ]
+            },
+            {
+                correctLetter: 'ל',
+                text: "5. מהו שם פרויקט הדגל של דנה באקדמיה מקוונת?",
+                options: [
+                    { text: 'תרבות חזותית', letter: 'ק', isCorrect: false },
+                    { text: 'אמנות בעידן הדיגיטלי', letter: 'ח', isCorrect: false },
+                    { text: 'זהות ישראלית', letter: 'ל', isCorrect: true },
+                    { text: 'פסיכולוגיה של צרכנים', letter: 'צ', isCorrect: false }
+                ]
+            },
+            {
+                correctLetter: 'י',
+                text: "6. מיהו איש התמיכה שעבד עם דנה באקדמיה מקוונת?",
+                options: [
+                    { text: 'גל', letter: 'ש', isCorrect: false },
+                    { text: 'בני', letter: 'ע', isCorrect: false },
+                    { text: "ג'ימי", letter: 'י', isCorrect: true },
+                    { text: 'דניאל', letter: 'ל', isCorrect: false }
+                ]
+            },
+            {
+                correctLetter: 'ו',
+                text: "7. באיזה תיכון דנה למדה?",
+                options: [
+                    { text: 'פלך', letter: 'ג', isCorrect: false },
+                    { text: 'התיכון לאומנויות', letter: 'ב', isCorrect: false },
+                    { text: 'ליד"ה', letter: 'ו', isCorrect: true },
+                    { text: 'בויאר', letter: 'כ', isCorrect: false }
+                ]
+            },
+            {
+                correctLetter: 'ת',
+                text: "8. שם בתה הקטנה של דנה:",
+                options: [
+                    { text: 'נוגה', letter: 'ד', isCorrect: false },
+                    { text: 'נגה', letter: 'ת', isCorrect: true }
+                ]
+            }
+        ];
+
+        const ANAGRAM_ANSWER = "טוטאליות";
+
+        // Code solutions
+        const CODE_PART_1 = "4"; // Number of double spaces (solution)
+        const CODE_PART_2 = "8"; // Color HEX card ID
+        const CODE_PART_3 = "3"; // Quiz completion digit
+        const CODE_PART_4 = "5"; // Anagram success digit
+        const FINAL_SECRET_CODE = CODE_PART_1 + CODE_PART_2 + CODE_PART_3 + CODE_PART_4; // "4835"
+
+        // Step navigation
+        function hideAllSteps() {
+            document.getElementById('step-intro').classList.add('hidden');
+            document.getElementById('step-puzzle-1').classList.add('hidden');
+            document.getElementById('step-puzzle-2').classList.add('hidden');
+            document.getElementById('step-puzzle-quiz').classList.add('hidden');
+            document.getElementById('step-puzzle-3').classList.add('hidden');
+            document.getElementById('step-puzzle-match').classList.add('hidden');
+            document.getElementById('step-blessing').classList.add('hidden');
+            document.getElementById('step-success').classList.add('hidden');
+        }
+
+        function updateOCDMeter(percent) {
+            document.getElementById('ocd-meter').innerText = percent + "%";
+        }
+
+        function startEscapeRoom() {
+            playSound('click');
+            hideAllSteps();
+            document.getElementById('step-puzzle-1').classList.remove('hidden');
+            updateOCDMeter(15);
+            
+            // Clear inputs and reset state
+            document.getElementById('p1-space-input').value = "";
+            document.getElementById('p1-error-msg').classList.add('hidden');
+            document.getElementById('p1-success-block').classList.add('hidden');
+        }
+
+        // ==========================================
+        // PUZZLE 1: Printed Sheet Verification
+        // ==========================================
+        function checkPrintedSpaces() {
+            const userInput = document.getElementById('p1-space-input').value.trim();
+            const errorMsg = document.getElementById('p1-error-msg');
+            const successBlock = document.getElementById('p1-success-block');
+            const nextBtn = document.getElementById('p1-next-btn');
+
+            if (userInput === CODE_PART_1) {
+                playSound('success');
+                errorMsg.classList.add('hidden');
+                successBlock.classList.remove('hidden');
+                updateOCDMeter(30);
+
+                // Enable Next Button
+                nextBtn.removeAttribute('disabled');
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                nextBtn.classList.add('hover:bg-emerald-500', 'shadow-lg', 'shadow-emerald-600/20');
+            } else {
+                playSound('error');
+                errorMsg.classList.remove('hidden');
+                successBlock.classList.add('hidden');
+                nextBtn.setAttribute('disabled', 'true');
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                nextBtn.classList.remove('hover:bg-emerald-500');
+            }
+        }
+
+        function goToPuzzle1() {
+            playSound('click');
+            hideAllSteps();
+            document.getElementById('step-puzzle-1').classList.remove('hidden');
+        }
+
+        // ==========================================
+        // PUZZLE 2: Color Palette Match
+        // ==========================================
+        function goToPuzzle2() {
+            playSound('click');
+            hideAllSteps();
+            document.getElementById('step-puzzle-2').classList.remove('hidden');
+            document.getElementById('p1-code-display').innerText = 'מופלאה';
+            updateOCDMeter(30);
+            initializePuzzle2();
+        }
+
+        function initializePuzzle2() {
+            const grid = document.getElementById('palette-grid');
+            grid.innerHTML = "";
+            selectedPaletteIndex = null;
+            document.getElementById('p2-success-msg').classList.add('hidden');
+            
+            const palettes = [
+                { id: "1", name: "פסטל חלומות", hex: "#F472B6", actualColor: "#F472B6" },
+                { id: "2", name: "ארכיון שלכת", hex: "#F59E0B", actualColor: "#F59E0B" },
+                { id: "8", name: "אינדיגו טהור", hex: "#6366F1", actualColor: "#4d536e" }, 
+                { id: "4", name: "בוקר טוקיו", hex: "#10B981", actualColor: "#10B981" },
+                { id: "5", name: "צל קטלוג", hex: "#6B7280", actualColor: "#6B7280" }
+            ];
+
+            palettes.forEach((pal) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-900 border border-slate-800 rounded-xl p-3 cursor-pointer transition transform hover:-translate-y-1 hover:border-slate-700 duration-150 flex flex-col items-center text-center";
+                card.dataset.id = pal.id;
+                
+                const colorBox = document.createElement('div');
+                colorBox.className = "w-full h-20 rounded-lg mb-3 shadow-inner";
+                colorBox.style.backgroundColor = pal.actualColor;
+                
+                const nameLabel = document.createElement('span');
+                nameLabel.className = "text-xs text-slate-400 font-semibold mb-1";
+                nameLabel.innerText = pal.name;
+
+                const hexLabel = document.createElement('span');
+                hexLabel.className = "font-mono text-sm text-slate-200 font-bold";
+                hexLabel.innerText = pal.hex;
+
+                card.appendChild(colorBox);
+                card.appendChild(nameLabel);
+                card.appendChild(hexLabel);
+
+                card.onclick = function() {
+                    handlePaletteSelection(this, pal.id);
+                };
+
+                grid.appendChild(card);
+            });
+        }
+
+        function handlePaletteSelection(cardElement, id) {
+            playSound('click');
+            
+            const cards = document.querySelectorAll('#palette-grid > div');
+            cards.forEach(c => c.classList.remove('border-indigo-500', 'bg-indigo-950/20', 'border-emerald-500', 'bg-emerald-950/20', 'border-rose-500', 'bg-rose-950/20'));
+
+            if (id === CODE_PART_2) {
+                playSound('success');
+                cardElement.classList.add('border-emerald-500', 'bg-emerald-950/20');
+                document.getElementById('p2-success-msg').classList.remove('hidden');
+                updateOCDMeter(45);
+
+                const nextBtn = document.getElementById('p2-next-btn');
+                nextBtn.removeAttribute('disabled');
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                nextBtn.classList.add('hover:bg-emerald-500', 'shadow-lg', 'shadow-emerald-600/20');
+            } else {
+                playSound('error');
+                cardElement.classList.add('border-rose-500', 'bg-rose-950/20');
+                
+                document.getElementById('p2-success-msg').classList.add('hidden');
+                const nextBtn = document.getElementById('p2-next-btn');
+                nextBtn.setAttribute('disabled', 'true');
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                nextBtn.classList.remove('hover:bg-emerald-500');
+            }
+        }
+
+        // ==========================================
+        // PUZZLE 3: The 8-Question Quiz Logic
+        // ==========================================
+        function goToPuzzleQuiz() {
+            playSound('click');
+            hideAllSteps();
+            document.getElementById('step-puzzle-quiz').classList.remove('hidden');
+
+            updateOCDMeter(50);
+
+            // Always start the quiz screen from question 1 and render it immediately
+            currentQuizIndex = 0;
+            loadQuizQuestion();
+            renderQuizInventory();
+        }
+
+        function renderQuizInventory() {
+            const inventoryRow = document.getElementById('quiz-inventory-row');
+            inventoryRow.innerHTML = "";
+            
+            for (let i = 0; i < 8; i++) {
+                const cell = document.createElement('div');
+                cell.className = "w-10 h-10 border-2 rounded-lg flex items-center justify-center font-bold text-lg transition duration-200 cursor-pointer";
+                cell.title = `קפצי לשאלה ${i+1}`;
+                cell.onclick = () => jumpToQuestion(i);
+                
+                if (currentQuizIndex === i) {
+                    cell.className += " border-indigo-500 ring-2 ring-indigo-500/30";
+                }
+
+                if (collectedLetters[i]) {
+                    cell.innerText = collectedLetters[i];
+                    cell.className += " bg-indigo-950/40 text-indigo-400 border-indigo-700";
+                } else {
+                    cell.innerText = "?";
+                    cell.className += " border-slate-800 border-dashed text-slate-600";
+                }
+                inventoryRow.appendChild(cell);
+            }
+
+            // Check if all slots are filled to enable checking/proceeding
+            const allFilled = collectedLetters.every(char => char !== "");
+            const submitBtn = document.getElementById('quiz-submit-btn');
+            if (allFilled) {
+                submitBtn.removeAttribute('disabled');
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                submitBtn.classList.add('hover:bg-emerald-500', 'shadow-lg', 'shadow-emerald-600/20');
+            } else {
+                submitBtn.setAttribute('disabled', 'true');
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                submitBtn.classList.remove('hover:bg-emerald-500');
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            playSound('click');
+            currentQuizIndex = idx;
+            loadQuizQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuizIndex < 7) {
+                playSound('click');
+                currentQuizIndex++;
+                loadQuizQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuizIndex > 0) {
+                playSound('click');
+                currentQuizIndex--;
+                loadQuizQuestion();
+            }
+        }
+
+        function loadQuizQuestion() {
+            // Manage prev/next buttons disabled states
+            document.getElementById('quiz-prev-q-btn').disabled = (currentQuizIndex === 0);
+            document.getElementById('quiz-next-q-btn').disabled = (currentQuizIndex === 7);
+
+            const qData = quizQuestions[currentQuizIndex];
+            
+            document.getElementById('quiz-progress-text').innerText = `שאלה ${currentQuizIndex + 1} מתוך 8`;
+            document.getElementById('quiz-question-text').innerText = qData.text;
+
+            const optionsContainer = document.getElementById('quiz-options-container');
+            optionsContainer.innerHTML = "";
+
+            qData.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                
+                // Styling depends on whether this option's letter is currently selected for this slot
+                const isSelected = (collectedLetters[currentQuizIndex] === opt.letter);
+                
+                let selectStyles = "bg-slate-900 border-slate-800 hover:bg-slate-800 hover:border-slate-700";
+                if (isSelected) {
+                    selectStyles = "bg-indigo-950/40 border-indigo-500 text-indigo-300 ring-1 ring-indigo-500/20";
+                }
+
+                btn.className = `quiz-opt text-right text-sm border p-3.5 rounded-lg transition duration-150 w-full flex items-center justify-between gap-4 ${selectStyles}`;
+                
+                // Display option text with its respective letter option visually explicit
+                btn.innerHTML = `
+                    <span>${opt.text}</span>
+                    <span class="font-mono bg-slate-950 border border-slate-800 text-indigo-400 font-bold px-2 py-0.5 rounded text-xs select-none">
+                        אות: ${opt.letter}
+                    </span>
+                `;
+
+                btn.onclick = function() {
+                    handleOptionClick(opt);
+                };
+                optionsContainer.appendChild(btn);
+            });
+
+            renderQuizInventory();
+        }
+
+        function handleOptionClick(opt) {
+            playSound('click');
+            
+            // Collect the letter next to the clicked answer
+            collectedLetters[currentQuizIndex] = opt.letter;
+            renderQuizInventory();
+
+            // Refresh options visuals
+            loadQuizQuestion();
+
+            // Small automatic progressive delay to help transition questions naturally
+            if (currentQuizIndex < 7) {
+                setTimeout(() => {
+                    nextQuestion();
+                }, 350);
+            }
+        }
+
+        // ==========================================
+        // PUZZLE 4: Typing the Word obtained from Quiz
+        // ==========================================
+        function goToPuzzle3() {
+            playSound('click');
+            hideAllSteps();
+            document.getElementById('step-puzzle-3').classList.remove('hidden');
+            
+            document.getElementById('p3-display-c1').innerText = CODE_PART_1;
+            document.getElementById('p3-display-c2').innerText = CODE_PART_2;
+            updateOCDMeter(75);
+            
+            initializePuzzle3();
+        }
+
+        function initializePuzzle3() {
+            document.getElementById('p3-success-msg').classList.add('hidden');
+
+            // Reset text field
+            document.getElementById('anagram-input').value = "";
+
+            // Keep next page button locked until correct guess
+            const nextBtn = document.getElementById('p3-next-btn');
+            nextBtn.setAttribute('disabled', 'true');
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            nextBtn.classList.remove('hover:bg-emerald-500');
+        }
+
+        function checkAnagramAnswer() {
+            const rawInput = document.getElementById('anagram-input').value;
+            const cleanedInput = rawInput.trim().replace(/\s+/g, "");
+
+            if (cleanedInput === ANAGRAM_ANSWER) {
+                playSound('success');
+                document.getElementById('p3-success-msg').classList.remove('hidden');
+                updateOCDMeter(90);
+
+                const nextBtn = document.getElementById('p3-next-btn');
+                nextBtn.removeAttribute('disabled');
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                nextBtn.classList.add('hover:bg-emerald-500', 'shadow-lg', 'shadow-emerald-600/20');
+            } else {
+                playSound('error');
+                alert("המילה הזו אינה המילה שהתקבלה מהאותיות, או שיש בה טעות כתיב. נסי שוב!");
+            }
+        }
+
+
+        // Allow pressing Enter on the טוטאליות input
+        document.addEventListener('DOMContentLoaded', function() {
+            const anagramInput = document.getElementById('anagram-input');
+            if (anagramInput) {
+                anagramInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        checkAnagramAnswer();
+                    }
+                });
+            }
+        });
+
+
+
+
+        // ==========================================
+        // PUZZLE 5: Course Matching and Emoji Key
+        // ==========================================
+        const courseMatchingData = [
+            { designer: 'אורלי', course: 'מבוא לקולנוע דוקומנטרי' },
+            { designer: 'חגית', course: 'פסיכולוגיה של צרכנים' },
+            { designer: 'עפרה', course: 'אמנות המאה ה-20' },
+            { designer: 'מירה', course: 'מבוא ללימודים הומניסטיים' },
+            { designer: 'מורן', course: 'עיתונאות בעידן הדיגיטלי' },
+            { designer: 'תמי', course: 'אנגלית מתקדמים א' },
+            { designer: 'דנית', course: 'אנגלית לצרכים אקדמיים – טרום בסיסי' },
+            { designer: 'גלית', course: 'תרבות חזותית' },
+            { designer: 'הילה', course: 'רשתות תקשורת ומחשבים' }
+        ];
+
+        // This is the visible answer order. The course order can be arbitrary.
+        // The emoji in row 1 hides מ, row 2 hides ד, row 3 hides ר, and so on.
+        const visibleCourseRows = [
+            { course: 'תרבות חזותית', emoji: '🎨', letter: 'מ' },
+            { course: 'מבוא לקולנוע דוקומנטרי', emoji: '📚', letter: 'ד' },
+            { course: 'אנגלית לצרכים אקדמיים – טרום בסיסי', emoji: '💡', letter: 'ר' },
+            { course: 'פסיכולוגיה של צרכנים', emoji: '🧭', letter: 'י' },
+            { course: 'רשתות תקשורת ומחשבים', emoji: '🎓', letter: 'ך' },
+            { course: 'אמנות המאה ה-20', emoji: '🖥️', letter: 'ע' },
+            { course: 'עיתונאות בעידן הדיגיטלי', emoji: '✨', letter: 'ז' },
+            { course: 'אנגלית מתקדמים א', emoji: '💡', letter: 'ר' },
+            { course: 'מבוא ללימודים הומניסטיים', emoji: '📌', letter: 'ה' }
+        ];
+
+        const designerOptions = ['אורלי', 'חגית', 'עפרה', 'מירה', 'מורן', 'תמי', 'דנית', 'גלית', 'הילה'];
+        const MATCHING_CODE_ANSWER = "מדריךעזרה";
+
+        function goToMatchingPuzzle() {
+            playSound('click');
+            hideAllSteps();
+            document.getElementById('step-puzzle-match').classList.remove('hidden');
+            updateOCDMeter(94);
+            initializeMatchingPuzzle();
+        }
+
+        function initializeMatchingPuzzle() {
+            const container = document.getElementById('matching-dropdown-rows-container');
+            container.innerHTML = "";
+
+            visibleCourseRows.forEach((rowData, index) => {
+                const match = courseMatchingData.find(entry => entry.course === rowData.course);
+
+                const row = document.createElement('div');
+                row.className = "grid grid-cols-1 md:grid-cols-[1fr_190px] gap-3 items-center bg-slate-900/70 border border-slate-800 rounded-xl p-3 matching-row";
+                row.dataset.course = rowData.course;
+                row.dataset.expectedDesigner = match.designer;
+                row.dataset.emoji = rowData.emoji;
+                row.dataset.letter = rowData.letter;
+                row.dataset.rowNumber = String(index + 1);
+
+                const courseBox = document.createElement('div');
+                courseBox.className = "flex items-center justify-between gap-3";
+                courseBox.innerHTML = `
+                    <span class="text-right text-sm text-slate-100 leading-relaxed">${index + 1}. ${rowData.course}</span>
+                    <span class="text-2xl shrink-0">${rowData.emoji}</span>
+                `;
+
+                const select = document.createElement('select');
+                select.className = "matching-select bg-slate-950 border border-slate-700 focus:border-indigo-500 rounded-lg px-3 py-2 text-slate-100 outline-none transition";
+                select.innerHTML = `<option value="">בחרי מעצבת...</option>` + designerOptions.map(name => `<option value="${name}">${name}</option>`).join("");
+
+                row.appendChild(courseBox);
+                row.appendChild(select);
+                container.appendChild(row);
+            });
+
+            document.getElementById('matching-error-msg').classList.add('hidden');
+            document.getElementById('matching-success-msg').classList.add('hidden');
+            document.getElementById('matching-code-success').classList.add('hidden');
+            document.getElementById('matched-emoji-sequence').innerHTML = "";
+            document.getElementById('match-code-input').value = "";
+
+            const nextBtn = document.getElementById('matching-next-btn');
+            nextBtn.setAttribute('disabled', 'true');
+            nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            nextBtn.classList.remove('hover:bg-emerald-500', 'shadow-lg', 'shadow-emerald-600/20');
+        }
+
+        function checkCourseMatching() {
+            const rows = document.querySelectorAll('.matching-row');
+            let allCorrect = true;
+
+            rows.forEach(row => {
+                const select = row.querySelector('.matching-select');
+                row.classList.remove('border-emerald-500', 'border-rose-500', 'bg-emerald-950/30', 'bg-rose-950/30');
+                select.classList.remove('border-emerald-500', 'border-rose-500');
+
+                if (select.value === row.dataset.expectedDesigner) {
+                    row.classList.add('border-emerald-500', 'bg-emerald-950/30');
+                    select.classList.add('border-emerald-500');
+                } else {
+                    row.classList.add('border-rose-500', 'bg-rose-950/30');
+                    select.classList.add('border-rose-500');
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                playSound('success');
+                document.getElementById('matching-error-msg').classList.add('hidden');
+                document.getElementById('matching-success-msg').classList.remove('hidden');
+                renderMatchedEmojiSequence();
+                updateOCDMeter(97);
+            } else {
+                playSound('error');
+                document.getElementById('matching-error-msg').classList.remove('hidden');
+                document.getElementById('matching-success-msg').classList.add('hidden');
+            }
+        }
+
+        function renderMatchedEmojiSequence() {
+            const sequence = document.getElementById('matched-emoji-sequence');
+            sequence.innerHTML = "";
+
+            const rows = Array.from(document.querySelectorAll('.matching-row'))
+                .sort((a, b) => Number(a.dataset.rowNumber) - Number(b.dataset.rowNumber));
+
+            rows.forEach((row, index) => {
+                const span = document.createElement('span');
+                span.innerText = row.dataset.emoji;
+                sequence.appendChild(span);
+
+                if (index === 4) {
+                    const divider = document.createElement('span');
+                    divider.className = "text-slate-600 text-2xl";
+                    divider.innerText = "|";
+                    sequence.appendChild(divider);
+                }
+            });
+        }
+
+        function checkMatchingCodeWord() {
+            const rawInput = document.getElementById('match-code-input').value;
+            const cleanedInput = rawInput.trim().replace(/\s+/g, "");
+
+            if (cleanedInput === MATCHING_CODE_ANSWER) {
+                playSound('success');
+                document.getElementById('matching-code-success').classList.remove('hidden');
+
+                const nextBtn = document.getElementById('matching-next-btn');
+                nextBtn.removeAttribute('disabled');
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                nextBtn.classList.add('hover:bg-emerald-500', 'shadow-lg', 'shadow-emerald-600/20');
+            } else {
+                playSound('error');
+                alert("עדיין לא. בדקי שוב את רצף האימוג׳ים ואת מחסן האותיות.");
+            }
+        }
+
+
+
+        // ==========================================
+        // BLESSING COMPLETION
+        // ==========================================
+        const blessingOptions = ["מופלאה", "כישורים", "מדריך עזרה", "שכל שלך", "הטוטאליות"];
+        const blessingAnswers = {
+            "blessing-word-1": "מופלאה",
+            "blessing-word-2": "כישורים",
+            "blessing-word-3": "מדריך עזרה",
+            "blessing-word-4": "שכל שלך",
+            "blessing-word-5": "הטוטאליות"
+        };
+
+        function goToBlessingScreen() {
+            playSound('click');
+            hideAllSteps();
+            document.getElementById('step-blessing').classList.remove('hidden');
+            updateOCDMeter(99);
+            initializeBlessingSelects();
+        }
+
+        function initializeBlessingSelects() {
+            Object.keys(blessingAnswers).forEach((id) => {
+                const select = document.getElementById(id);
+                if (!select) return;
+
+                const currentValue = select.value;
+                select.innerHTML = `<option value="">בחרי מילה...</option>` + blessingOptions.map(word => `<option value="${word}">${word}</option>`).join("");
+                if (currentValue) select.value = currentValue;
+
+                select.classList.remove('border-emerald-500', 'border-rose-500');
+            });
+
+            document.getElementById('blessing-error-msg').classList.add('hidden');
+        }
+
+        function checkBlessingWords() {
+            let allCorrect = true;
+
+            Object.entries(blessingAnswers).forEach(([id, answer]) => {
+                const select = document.getElementById(id);
+                select.classList.remove('border-emerald-500', 'border-rose-500');
+
+                if (select.value === answer) {
+                    select.classList.add('border-emerald-500');
+                } else {
+                    select.classList.add('border-rose-500');
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                playSound('success');
+                document.getElementById('blessing-error-msg').classList.add('hidden');
+                hideAllSteps();
+                document.getElementById('step-success').classList.remove('hidden');
+                document.getElementById('global-status').innerText = "הושלם!";
+                document.getElementById('global-status').className = "text-emerald-400 font-bold";
+                updateOCDMeter(100);
+                startConfetti();
+            } else {
+                playSound('error');
+                document.getElementById('blessing-error-msg').classList.remove('hidden');
+            }
+        }
+
+
+        // ==========================================
+        // BONUS: Lightweight Canvas Confetti
+        // ==========================================
+        function startConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+
+            const colors = ['#f472b6', '#38bdf8', '#fbbf24', '#34d399', '#818cf8'];
+            const confetti = [];
+
+            for (let i = 0; i < 120; i++) {
+                confetti.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 6 + 4,
+                    d: Math.random() * canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                    tiltAngle: 0
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                confetti.forEach((c, index) => {
+                    c.tiltAngle += c.tiltAngleIncremental;
+                    c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+                    c.x += Math.sin(c.tiltAngle);
+                    c.tilt = Math.sin(c.tiltAngle - index / 3) * 15;
+
+                    ctx.beginPath();
+                    ctx.lineWidth = c.r;
+                    ctx.strokeStyle = c.color;
+                    ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+                    ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
+                    ctx.stroke();
+
+                    if (c.y > canvas.height) {
+                        confetti[index] = {
+                            x: Math.random() * canvas.width,
+                            y: -20,
+                            r: c.r,
+                            d: c.d,
+                            color: c.color,
+                            tilt: c.tilt,
+                            tiltAngleIncremental: c.tiltAngleIncremental,
+                            tiltAngle: c.tiltAngle
+                        };
+                    }
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+    </script>
+</body>
+</html>
